@@ -2,7 +2,8 @@ import { VStack, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { Container, Box, InputGroup } from "@chakra-ui/react";
 import { InputRightElement, Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
 import { useState } from "react";
 
 export default function () {
@@ -11,13 +12,68 @@ export default function () {
   const [email, setEmail] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
   const [password, setPassword] = useState();
-  const [pic, setPic] = useState();
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const showPassword = () => {
     setShow(!show);
   };
-  const postDetails = () => {};
-  const submitHandler = () => {};
+
+  const submitHandler = async () => {
+    setLoading(true);
+    if (!name || !email || !password || !confirmPassword) {
+      toast({
+        title: "Please Fill all the Fields",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Password Do Not Match",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/user",
+        {
+          name,
+          email,
+          password,
+        });
+      toast({
+        title: "Registration Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+      setLoading(true)
+    } catch (error) {
+      toast({
+        title: "Error Occurred",
+        description: error,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+      setLoading(false);
+    }
+  };
 
   return (
     <Container className="xl" centerContent>
@@ -63,14 +119,20 @@ export default function () {
             </InputGroup>
           </FormControl>
 
-          <FormControl id="pic">
-            <FormLabel>Upload your Picture</FormLabel>
-            <Input
-              type="file"
-              p={1.5}
-              accept="image/*"
-              onChange={(e) => postDetails(e.target.files[0])}
-            />
+          <FormControl id="password" isRequired>
+            <FormLabel>Confirm Password</FormLabel>
+            <InputGroup>
+              <Input
+                type={show ? "text" : "password"}
+                placeholder="Enter Your Password"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <InputRightElement width="4.5rem">
+                <Button h="1.75rem" size="4.5rem" onClick={showPassword}>
+                  {show ? "Hide" : "Show"}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
           </FormControl>
 
           <div className="signup_link">
