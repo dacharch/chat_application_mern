@@ -3,8 +3,10 @@ import { ChatState } from "../../../Context/ChatProvider";
 import { Box, Button, Stack, useToast, Text } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
 import ChatLoading from "../../Loading/ChatLoading";
+
 import axios from "axios";
 import { getSender } from "../../config/getSender";
+import GroupChatModel from "./GroupChatModel";
 
 export default function MyChats() {
   const [loggedUser, setLoggedUser] = useState();
@@ -63,13 +65,15 @@ export default function MyChats() {
         alignItems="center"
       >
         My Chats
-        <Button
-          d="flex"
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<IoMdAdd />}
-        >
-          New Group Chat
-        </Button>
+        <GroupChatModel>
+          <Button
+            d="flex"
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<IoMdAdd />}
+          >
+            New Group Chat
+          </Button>
+        </GroupChatModel>
       </Box>
       <Box
         d="flex"
